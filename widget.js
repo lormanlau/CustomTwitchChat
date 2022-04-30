@@ -62,11 +62,13 @@ window.addEventListener("onEventReceived", (obj) => {
 
 function onMessage(event) {
   const { msgId, userId } = event;
-  const { displayName, isAction, text } = event.data;
+  const { displayColor, displayName, isAction, text } = event.data;
   if (isAction) return;
   if (text.startsWith("!") && hideCommands === "yes") return;
   if (ignoredUsers.indexOf(displayName) !== -1) return;
   let message = attachEmotes(event.data);
+  let userColor = nickColor === "user" ? displayColor : customNickColor;
+
   const element = $.parseHTML(`
     <div data-sender="${userId}" data-msgid="${msgId}" class="message-row {animationIn} animated">
       <div class="chatWrapper">
@@ -85,11 +87,11 @@ function onMessage(event) {
             </svg>
         </div>
         <div class="user-box">
-          <div class="nameDiv">${displayName}</div>
+          <div class="nameDiv" style="color: ${userColor}">${displayName}</div>
         </div>
       </div>
     </div>`);
-  $(element).prependTo(".main-container");
+  $(element).appendTo(".main-container");
 }
 
 function attachEmotes(message) {

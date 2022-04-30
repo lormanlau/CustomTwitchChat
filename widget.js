@@ -46,9 +46,6 @@ window.addEventListener("onEventReceived", (obj) => {
     case "message":
       onMessage(event);
       break;
-    case "raid-latest":
-      onRaid(event);
-      break;
     case "delete-message":
       deleteMessage(event.msgId);
       break;
@@ -56,7 +53,7 @@ window.addEventListener("onEventReceived", (obj) => {
       deleteMessages(event.userId);
       break;
     case "event:test":
-      onTestButton(event);
+      onTestButton();
       break;
     default:
       return;
@@ -67,12 +64,15 @@ function onMessage(event) {
   const { msgId, userId } = event;
   const { displayName, isAction, text } = event.data;
   if (isAction) return;
+  if (text.startsWith("!") && hideCommands === "yes") return;
+  if (ignoredUsers.indexOf(displayName) !== -1) return;
+  let message = attachEmotes(event.data);
   const element = $.parseHTML(`
     <div data-sender="${userId}" data-msgid="${msgId}" class="message-row {animationIn} animated">
       <div class="chatWrapper">
         <div class="square"></div>
         <div class="user-message">
-          <div class="msgDiv">${text}</div>
+          <div class="msgDiv">${message}</div>
         </div>
         <div class="squares">
             <svg width="64" height="48" xmlns="http://www.w3.org/2000/svg">
@@ -85,14 +85,64 @@ function onMessage(event) {
             </svg>
         </div>
         <div class="user-box">
-          <div class="nameDiv" style="color: white">${displayName}</div>
+          <div class="nameDiv">${displayName}</div>
         </div>
       </div>
     </div>`);
   $(element).prependTo(".main-container");
 }
 
-function onTestButton(event) {
+function attachEmotes(message) {
+  let text = html_encode(message.text);
+  let data = message.emotes;
+  if (typeof message.attachment !== "undefined") {
+    if (typeof message.attachment.media !== "undefined") {
+      if (typeof message.attachment.media.image !== "undefined") {
+        text = `${message.text}<img src="${message.attachment.media.image.src}">`;
+      }
+    }
+  }
+  return text.replace(/([^\s]*)/gi, function (m, key) {
+    let result = data.filter((emote) => {
+      return html_encode(emote.name) === key;
+    });
+    if (typeof result[0] !== "undefined") {
+      let url = result[0]["urls"][1];
+      if (provider === "twitch") {
+        return `<img class="emote" " src="${url}"/>`;
+      } else {
+        if (typeof result[0].coords === "undefined") {
+          result[0].coords = { x: 0, y: 0 };
+        }
+        let x = parseInt(result[0].coords.x);
+        let y = parseInt(result[0].coords.y);
+
+        let width = "18px";
+        let height = "auto";
+
+        return `<div class="emote" style="width: ${width}; height:${height}; display: inline-block; background-image: url(${url}); background-position: -${x}px -${y}px;"></div>`;
+      }
+    } else return key;
+  });
+}
+
+function html_encode(e) {
+  return e.replace(/[<>"^]/g, function (e) {
+    return "&#" + e.charCodeAt(0) + ";";
+  });
+}
+
+function deleteMessage(msgId) {
+  const messages = $(`.message-row[data-msgid="${msgId}"]`);
+  messages.remove();
+}
+
+function deleteMessages(userId) {
+  const messages = $(`.message-row[data-user-id="${userId}"]`);
+  messages.remove();
+}
+
+function onTestButton() {
   let emulated = new CustomEvent("onEventReceived", {
     detail: {
       listener: "message",

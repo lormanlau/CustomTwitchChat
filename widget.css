@@ -32,7 +32,7 @@
   border-radius: 0px;
   padding:0px;
   vertical-align: baseline;
-  border-top: 1px solid white;
+  border-top: 1px solid {{accentColor}};
 }
 
 .chatWrapper {
@@ -56,14 +56,14 @@
   position: absolute;
   height: 1rem;
   width: 1rem;
-  background-color: white;
+  background-color: {{accentColor}};
   top: 0;
   left: 0;
   transform: translate(-0.5rem, -0.5rem);
 }
 
 .squares {
-    fill: rgb(255,255,255);
+    fill: {{accentColor}};
     position: absolute;
     bottom: 0;
     left: 0;
@@ -90,12 +90,12 @@
   letter-spacing: 0px;
 }
 
-.user-box > span{
+.msgDiv, .nameDiv{
   font-size:{{fontSize}}px;
 }
 
 .nameDiv {
-  background-color: rgb(0,0,0,0.8);
+  background-color: {{backgroundColor}};
   padding-top: 3px;
   padding-bottom: 3px;
   text-align: center;
@@ -118,8 +118,8 @@
   font-family: 'Exo 2', sans-serif;
   font-size: 18px;
   word-wrap: break-all;
-  background-color: rgb(0,0,0,0.8);
-  color: white;
+  background-color: {{backgroundColor}};
+  color: {{fontColor}};
   overflow: hidden;
   width: 100%;
 }

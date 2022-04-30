@@ -20,10 +20,9 @@
   "nickColor": {
     "type": "dropdown",
     "label": "User Color:",
-    "value": "messagecolor",
+    "value": "custom",
     "options": {
       "user": "Twitch Color",
-      "messagecolor": "Message Color",
       "custom": "Specified Below",
       "remove": "Remove Username"
     },
@@ -31,7 +30,7 @@
   },
   "customNickColor": {
     "type": "colorpicker",
-    "label": "Custom User Color:",
+    "label": "Username Color:",
     "value": "rgba(255,255,255,1)",
     "group": "Typography"
   },
@@ -39,12 +38,6 @@
     "type": "colorpicker",
     "label": "Message Color",
     "value": "rgba(255,255,255,1)",
-    "group": "Typography"
-  },
-  "textShadow": {
-    "type": "text",
-    "label": "Text shadow",
-    "value": "rgb(0, 0, 0) 1px 1px 1px",
     "group": "Typography"
   },
   "emoteSize": {
@@ -63,27 +56,17 @@
     },
     "group": "Typography"
   },
-  "hideCommands": {
-    "label": "Hide lines starting with ! (!command)",
-    "type": "dropdown",
-    "value": "yes",
-    "options": {
-      "yes": "Yes",
-      "no": "No"
-    },
-    "group": "Settings"
-  },
-  "ignoredUsers": {
-    "label": "Ignored users (comma separated)",
-    "type": "text",
-    "value": "StreamElements,OtherBot",
-    "group": "Settings"
+  "accentColor": {
+    "type": "colorpicker",
+    "label": "Accent Color:",
+    "value": "rgba(255,255,255,1)",
+    "group": "Looks"
   },
   "backgroundColor": {
     "type": "colorpicker",
-    "label": "Background color:",
+    "label": "Background Color:",
     "value": "rgba(0,0,0,0)",
-    "group": "Settings"
+    "group": "Looks"
   },
   "animationIn": {
     "type": "dropdown",
@@ -124,7 +107,7 @@
       "zoomInUp": "zoomInUp",
       "rollIn": "rollIn"
     },
-    "group": "Settings"
+    "group": "Looks"
   },
   "animationOut": {
     "type": "dropdown",
@@ -165,6 +148,22 @@
       "zoomOutUp": "zoomOutUp",
       "rollOut": "rollOut"
     },
+    "group": "Looks"
+  },
+  "hideCommands": {
+    "label": "Hide lines starting with ! (!command)",
+    "type": "dropdown",
+    "value": "yes",
+    "options": {
+      "yes": "Yes",
+      "no": "No"
+    },
+    "group": "Settings"
+  },
+  "ignoredUsers": {
+    "label": "Ignored users (comma separated)",
+    "type": "text",
+    "value": "StreamElements,OtherBot",
     "group": "Settings"
   },
   "widgetName": {

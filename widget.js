@@ -10,7 +10,7 @@ let totalMessages = 0,
 let animationIn = "bounceIn";
 let animationOut = "bounceOut";
 let hideAfter = 60;
-let hideCommands = "no";
+let hideCommands;
 let ignoredUsers = [];
 
 window.addEventListener("onWidgetLoad", function (obj) {
@@ -33,6 +33,15 @@ window.addEventListener("onWidgetLoad", function (obj) {
     .then((profile) => {
       provider = profile.provider;
     });
+
+  if (fieldData.alignMessages === "block") {
+    addition = "prepend";
+    removeSelector = ".message-row:nth-child(n+" + (messagesLimit + 1) + ")";
+  } else {
+    addition = "append";
+    removeSelector =
+      ".message-row:nth-last-child(n+" + (messagesLimit + 1) + ")";
+  }
 
   ignoredUsers = fieldData.ignoredUsers
     .toLowerCase()
@@ -64,8 +73,9 @@ function onMessage(event) {
   const { msgId, userId } = event;
   const { displayColor, displayName, isAction, text } = event.data;
   if (isAction) return;
-  if (text.startsWith("!") && hideCommands === "yes") return;
+  if (text.startsWith("!") && hideCommands) return;
   if (ignoredUsers.indexOf(displayName) !== -1) return;
+  totalMessages += 1;
   let message = attachEmotes(event.data);
   let userColor = nickColor === "user" ? displayColor : customNickColor;
 
@@ -91,7 +101,50 @@ function onMessage(event) {
         </div>
       </div>
     </div>`);
-  $(element).appendTo(".main-container");
+
+  if (addition === "append") {
+    if (hideAfter !== 999) {
+      $(element)
+        .appendTo(".main-container")
+        .delay(hideAfter * 1000)
+        .queue(function () {
+          $(this)
+            .removeClass(animationIn)
+            .addClass(animationOut)
+            .delay(1000)
+            .queue(function () {
+              $(this).remove();
+              totalMessages -= 1;
+            })
+            .dequeue();
+        });
+    } else {
+      $(element).appendTo(".main-container");
+    }
+  } else {
+    if (hideAfter !== 999) {
+      $(element)
+        .prependTo(".main-container")
+        .delay(hideAfter * 1000)
+        .queue(function () {
+          $(this)
+            .removeClass(animationIn)
+            .addClass(animationOut)
+            .delay(1000)
+            .queue(function () {
+              $(this).remove();
+              totalMessages -= 1;
+            })
+            .dequeue();
+        });
+    } else {
+      $(element).prependTo(".main-container");
+    }
+  }
+
+  if (totalMessages > messagesLimit) {
+    removeRow();
+  }
 }
 
 function attachEmotes(message) {
@@ -142,6 +195,38 @@ function deleteMessage(msgId) {
 function deleteMessages(userId) {
   const messages = $(`.message-row[data-user-id="${userId}"]`);
   messages.remove();
+}
+
+function removeRow() {
+  if (!$(removeSelector).length) {
+    return;
+  }
+  if (animationOut !== "none" || !$(removeSelector).hasClass(animationOut)) {
+    if (hideAfter !== 999) {
+      $(removeSelector).dequeue();
+    } else {
+      $(removeSelector)
+        .addClass(animationOut)
+        .delay(1000)
+        .queue(function () {
+          totalMessages -= 1;
+          $(this).remove();
+        })
+        .dequeue();
+    }
+    return;
+  }
+
+  $(removeSelector).animate(
+    {
+      height: 0,
+      opacity: 0,
+    },
+    "slow",
+    function () {
+      $(removeSelector).remove();
+    }
+  );
 }
 
 function onTestButton() {
